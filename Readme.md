@@ -13,8 +13,7 @@ $ make
 Výsledek úspěšného překladu v konzoli
 
 ```
-gcc -std=gnu99 -Wall -Werror -Wextra -pedantic -pthread -o ipk-client ipk-client.c  -lm
-gcc -std=gnu99 -Wall -Werror -Wextra -pedantic -pthread -o ipk-server ipk-server.c  -lm
+gcc -std=gnu99 -Wall -Werror -Wextra -pedantic -pthread -o ipk-mtrip ipk-mtrip.c  -lm
 ```
 Uklizení binárních souborů
 ```
