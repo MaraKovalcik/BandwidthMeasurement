@@ -8,7 +8,7 @@
 
 PROGRAM=ipk-mtrip
 PROGRAMFILES=ipk-mtrip.c # případné další osubory
-CFLAGS=-std=gnu99 -Wall -Werror -Wextra -pedantic -pthread
+CFLAGS=-std=gnu99 -Wall -Wextra -pedantic -pthread #-Werror
 CC=gcc
 RM=rm -f
 
