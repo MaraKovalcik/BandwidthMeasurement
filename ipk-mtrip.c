@@ -14,6 +14,8 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <bits/signum.h>
+#include <signal.h>
 
 #define BUFSIZE 1024
 
@@ -36,6 +38,7 @@ int sUsed = -1;
 int tUsed = -1;
 
 // proměnné pro měření
+int alarmed = 0;
 int reflectPocetPrijatych = 0;
 int meterPocetOdeslanych = 0;
 
@@ -52,6 +55,7 @@ void printHelp();
 bool checkArguments(int, char **);
 void reflecting();
 void measurementing();
+void sigh(int);
 
 /*
  * Funkce pro vypsání nápovědy
@@ -201,6 +205,13 @@ void reflecting(){
 }
 
 /*
+ * Pomocná funkce pro alarm
+ */
+void sigh(int signum) {
+    alarmed = 1;
+}
+
+/*
  * Funkce měření (implementace klienta)
  */
 void measurementing(){
@@ -233,8 +244,13 @@ void measurementing(){
         exit(EXIT_FAILURE);
     }
 
-    /* nacteni zpravy od uzivatele */
-    for(int i =0; i < 4; i++) {
+
+    //for(int i =0; i < 4; i++) {
+    // alarm se spustí po době měření určené parametrem -t a ukončí cyklus while
+    signal(SIGALRM, &sigh);
+    alarm(dobaMereni);
+    printf("INFO: probiha mereni ...\n");
+    while(!alarmed) {
         memset(buf, 0, sizeof(buf));
         bzero(buf, BUFSIZE);
         strcpy(buf, "x");
@@ -251,7 +267,7 @@ void measurementing(){
         bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
         if (bytesrx < 0)
             perror("ERROR: recvfrom");
-        printf("Echo from server: '%s'\n", buf);
+        //printf("Echo from server: '%s'\n", buf);
         meterPocetOdeslanych++;
     }
     memset(buf, 0, sizeof(buf));
@@ -284,21 +300,20 @@ int main(int argc, char **argv) {
 
     // Program je spuštěn jako reflect
     if(isReflect == true) {
-        printf("Program je spusten jako reflektor\n");
-        printf("\tport: %d\n", port);
+        printf("Program je spusten jako reflektor\tport: %d\n--------------------------------------------------\n", port);
         reflecting();
     }
 
     // Program je spuštěn jako meter
     if(isMeter == true) {
-        printf("Program je spusten jako meter\n");
-        printf("\thost: %s | port: %d | sonda: %d | time: %d\n", host, port, velikostSondy, dobaMereni);
+        printf("Program je spusten jako meter\thost: %s | port: %d | sonda: %d | time: %d\n", host, port, velikostSondy, dobaMereni);
+        printf("-----------------------------------------------------------------------------------\n");
         measurementing();
     }
 
     // Výpis výsledků měření na stdout
     printf("\nVysledky mereni ipk-mtrip\n-----------------------------\n");
-    printf("Prumerna prenosova rychlost :\t%lf Mbit/s\n", prumernaPrenosRychlost);
+    printf("Prumerna  prenosova rychlost:\t%lf Mbit/s\n", prumernaPrenosRychlost);
     printf("Maximalni prenosova rychlost:\t%lf Mbit/s\n", maximalniPrenosRychlost);
     printf("Minimalni prenosova rychlost:\t%lf Mbit/s\n", minimalniPrenosRychlost);
     printf("Standardni odchylka         :\t%lf Mbit/s\n", standardniOdchylka);
