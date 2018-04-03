@@ -36,6 +36,9 @@ int sUsed = -1;
 int tUsed = -1;
 
 // proměnné pro měření
+int reflectPocetPrijatych = 0;
+int meterPocetOdeslanych = 0;
+
 double prumernaPrenosRychlost  = 0.0;
 double maximalniPrenosRychlost = 0.0;
 double minimalniPrenosRychlost = 0.0;
@@ -110,7 +113,7 @@ bool checkArguments(int argc, char **argv){
         fprintf(stderr, "ERROR: Spatne zadane argumenty pro reflektor\n");
         return false;
 
-    // Program je spuštěn jako meter
+        // Program je spuštěn jako meter
     }else if(argc == 10){
         if(strcmp(argv[9], "meter") == 0){
             isReflect = false; isMeter = true;
@@ -123,7 +126,7 @@ bool checkArguments(int argc, char **argv){
         fprintf(stderr, "ERROR: Spatne zadane argumenty pro meter\n");
         return false;
 
-    // Program je spuštěn se špatnými parametry
+        // Program je spuštěn se špatnými parametry
     }else{
         fprintf(stderr, "ERROR: Spatne zadane argumenty\n");
         return false;
@@ -169,6 +172,7 @@ void reflecting(){
         printf("INFO: Ready.\n");
         /* prijeti odpovedi a jeji vypsani */
         clientlen = sizeof(client_address);
+        memset(buf, 0, sizeof(buf));
         bytesrx = recvfrom(server_socket, buf, BUFSIZE, 0, (struct sockaddr *) &client_address, &clientlen);
         if (bytesrx < 0)
             perror("ERROR: recvfrom:");
@@ -176,13 +180,22 @@ void reflecting(){
         hostp = gethostbyaddr((const char *)&client_address.sin_addr.s_addr, sizeof(client_address.sin_addr.s_addr), AF_INET);
 
         hostaddrp = inet_ntoa(client_address.sin_addr);
-        printf("Message (%lu) from %s:  %s\n", strlen(buf), hostaddrp, buf);
-
-
-        /* odeslani zpravy zpet klientovi  */
-        bytestx = sendto(server_socket, buf, strlen(buf), 0, (struct sockaddr *) &client_address, clientlen);
-        if (bytestx < 0)
-            perror("ERROR: sendto:");
+        printf("Message (%lu) from %s:  '%s'\n", strlen(buf), hostaddrp, buf);
+        if(strcmp(buf, "konec_spojeni") == 0){
+            printf("tady mi doslo konec spojeni\n");
+            memset(buf, 0, sizeof(buf));
+            sprintf(buf, "%d", reflectPocetPrijatych);
+            bytestx = sendto(server_socket, buf, strlen(buf), 0, (struct sockaddr *) &client_address, clientlen);
+            if (bytestx < 0)
+                perror("ERROR: sendto:");
+            reflectPocetPrijatych=0;
+        }else {
+            /* odeslani zpravy zpet klientovi  */
+            bytestx = sendto(server_socket, buf, strlen(buf), 0, (struct sockaddr *) &client_address, clientlen);
+            if (bytestx < 0)
+                perror("ERROR: sendto:");
+            reflectPocetPrijatych++;
+        }
     }
 
 }
@@ -221,10 +234,29 @@ void measurementing(){
     }
 
     /* nacteni zpravy od uzivatele */
-    bzero(buf, BUFSIZE);
-    printf("Please enter msg: ");
-    fgets(buf, BUFSIZE, stdin);
+    for(int i =0; i < 4; i++) {
+        memset(buf, 0, sizeof(buf));
+        bzero(buf, BUFSIZE);
+        strcpy(buf, "x");
+        for (int i = 0; i < velikostSondy; i++)
+            strcat(buf, "x");
 
+        /* odeslani zpravy na server */
+        serverlen = sizeof(server_address);
+        bytestx = sendto(client_socket, buf, strlen(buf), 0, (struct sockaddr *) &server_address, serverlen);
+        if (bytestx < 0)
+            perror("ERROR: sendto");
+
+        /* prijeti odpovedi a jeji vypsani */
+        bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
+        if (bytesrx < 0)
+            perror("ERROR: recvfrom");
+        printf("Echo from server: '%s'\n", buf);
+        meterPocetOdeslanych++;
+    }
+    memset(buf, 0, sizeof(buf));
+    bzero(buf, BUFSIZE);
+    strcpy(buf, "konec_spojeni");
     /* odeslani zpravy na server */
     serverlen = sizeof(server_address);
     bytestx = sendto(client_socket, buf, strlen(buf), 0, (struct sockaddr *) &server_address, serverlen);
@@ -232,10 +264,11 @@ void measurementing(){
         perror("ERROR: sendto");
 
     /* prijeti odpovedi a jeji vypsani */
+    memset(buf, 0, sizeof(buf));
     bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
     if (bytesrx < 0)
         perror("ERROR: recvfrom");
-    printf("Echo from server: %s", buf);
+    printf("Echo from server: '%s' prijatych \n", buf);
 }
 
 /*
@@ -264,7 +297,7 @@ int main(int argc, char **argv) {
     }
 
     // Výpis výsledků měření na stdout
-    printf("Vysledky mereni ipk-mtrip\n-----------------------------\n");
+    printf("\nVysledky mereni ipk-mtrip\n-----------------------------\n");
     printf("Prumerna prenosova rychlost :\t%lf Mbit/s\n", prumernaPrenosRychlost);
     printf("Maximalni prenosova rychlost:\t%lf Mbit/s\n", maximalniPrenosRychlost);
     printf("Minimalni prenosova rychlost:\t%lf Mbit/s\n", minimalniPrenosRychlost);
