@@ -14,7 +14,6 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <assert.h>
-#include <bits/signum.h>
 #include <signal.h>
 #include <float.h>
 #include <math.h>
@@ -32,6 +31,7 @@ int port = 0;
 char *host = NULL;
 int velikostSondy = 0;
 int dobaMereni = 0;
+int doba1, doba2, doba3, doba4, doba5;
 
 // pomocné proměnné pro kontrolu zadání povinných argumentů
 int hostUsed = -1;
@@ -44,14 +44,13 @@ int alarmed = 0;
 int reflectPocetPrijatych = 0;
 int meterPocetOdeslanych = 0;
 
-// TODO přidávat hodnoty do pole v meteru, toto je provizorní
-//double namereneRychlosti[] = {55.142, 658.41, 12.8, 9998.512, 565.564, 6874.657, 4654.5464, 5464.687, 14.35, 688.989};
-double namereneRychlosti[] = {99.1, 99.0, 99.5, 99.178, 101.65, 94.2541, 100.0};
+double namereneRychlosti[5];
+int pocetZprav[5];
 double prumernaPrenosRychlost  = 0.0;
 double maximalniPrenosRychlost = 0.0;
 double minimalniPrenosRychlost = 0.0;
 double standardniOdchylka      = 0.0;
-double prumernyRTTpaketu       = 0.0;
+int prumernyRTTpaketu       = 0;
 
 /*
  * Deklarace funkcí
@@ -60,12 +59,12 @@ void printHelp();
 bool checkArguments(int, char **);
 void reflecting();
 void measurementing();
-void sigh(int);
+void callAlarm();
 double getPrumernaRychlost();
 double getMaximalniRychlost();
 double getMinimalniRychlost();
 double getStandardniOdchylka();
-double getPrumernyRTT();
+int getPrumernyRTT();
 
 /*
  * Funkce pro vypsání nápovědy
@@ -158,8 +157,8 @@ void reflecting(){
     socklen_t clientlen;
     struct sockaddr_in client_address, server_address;
     int optval;
-    const char * hostaddrp;
-    struct hostent *hostp;
+    //const char * hostaddrp;
+    //struct hostent *hostp;
 
     /* Vytvoreni soketu */
     if ((server_socket = socket(AF_INET, SOCK_DGRAM, 0)) <= 0)
@@ -182,8 +181,8 @@ void reflecting(){
         exit(EXIT_FAILURE);
     }
 
+    printf("INFO: Running ...\n");
     while(1){
-        printf("INFO: Ready.\n");
         /* prijeti odpovedi a jeji vypsani */
         clientlen = sizeof(client_address);
         memset(buf, 0, sizeof(buf));
@@ -191,12 +190,12 @@ void reflecting(){
         if (bytesrx < 0)
             perror("ERROR: recvfrom:");
 
-        hostp = gethostbyaddr((const char *)&client_address.sin_addr.s_addr, sizeof(client_address.sin_addr.s_addr), AF_INET);
+        //hostp = gethostbyaddr((const char *)&client_address.sin_addr.s_addr, sizeof(client_address.sin_addr.s_addr), AF_INET);
 
-        hostaddrp = inet_ntoa(client_address.sin_addr);
-        printf("Message (%lu) from %s:  '%s'\n", strlen(buf), hostaddrp, buf);
+        //hostaddrp = inet_ntoa(client_address.sin_addr);
+        //printf("Message (%lu) from %s:  '%s'\n", strlen(buf), hostaddrp, buf);
         if(strcmp(buf, "konec_spojeni") == 0){
-            printf("tady mi doslo konec spojeni\n");
+            //printf("tady mi doslo konec spojeni\n");
             memset(buf, 0, sizeof(buf));
             sprintf(buf, "%d", reflectPocetPrijatych);
             bytestx = sendto(server_socket, buf, strlen(buf), 0, (struct sockaddr *) &client_address, clientlen);
@@ -217,7 +216,7 @@ void reflecting(){
 /*
  * Pomocná funkce pro alarm
  */
-void sigh(int signum) {
+void callAlarm() {
     alarmed = 1;
 }
 
@@ -254,19 +253,37 @@ void measurementing(){
         exit(EXIT_FAILURE);
     }
 
+    // alarm1 se spustí po době měření určené parametrem -t a ukončí cyklus while
+    //****************************************************************************************************
+    if(dobaMereni > 0) {
+        signal(SIGALRM, &callAlarm);
+        //alarm(dobaMereni);
+        alarm(1);
+        printf("INFO: probiha mereni ...\n");
+        while (!alarmed) {
+            memset(buf, 0, sizeof(buf));
+            bzero(buf, BUFSIZE);
+            strcpy(buf, "x");
+            for (int i = 0; i < velikostSondy; i++)
+                strcat(buf, "x");
 
-    //for(int i =0; i < 4; i++) {
-    // alarm se spustí po době měření určené parametrem -t a ukončí cyklus while
-    signal(SIGALRM, &sigh);
-    alarm(dobaMereni);
-    printf("INFO: probiha mereni ...\n");
-    while(!alarmed) {
+            /* odeslani zpravy na server */
+            serverlen = sizeof(server_address);
+            bytestx = sendto(client_socket, buf, strlen(buf), 0, (struct sockaddr *) &server_address, serverlen);
+            if (bytestx < 0)
+                perror("ERROR: sendto");
+
+            /* prijeti odpovedi a jeji vypsani */
+            bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
+            if (bytesrx < 0)
+                perror("ERROR: recvfrom");
+            //printf("Echo from server: '%s'\n", buf);
+            meterPocetOdeslanych++;
+        }
+
         memset(buf, 0, sizeof(buf));
         bzero(buf, BUFSIZE);
-        strcpy(buf, "x");
-        for (int i = 0; i < velikostSondy; i++)
-            strcat(buf, "x");
-
+        strcpy(buf, "konec_spojeni");
         /* odeslani zpravy na server */
         serverlen = sizeof(server_address);
         bytestx = sendto(client_socket, buf, strlen(buf), 0, (struct sockaddr *) &server_address, serverlen);
@@ -274,27 +291,204 @@ void measurementing(){
             perror("ERROR: sendto");
 
         /* prijeti odpovedi a jeji vypsani */
+        memset(buf, 0, sizeof(buf));
         bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
         if (bytesrx < 0)
             perror("ERROR: recvfrom");
-        //printf("Echo from server: '%s'\n", buf);
-        meterPocetOdeslanych++;
+        //printf("Echo from server: '%s' prijatych \n", buf);
+        //printf("tady chci z buff %s udelat integer\n", buf);
+        pocetZprav[0] = strtol(buf, NULL, 0);
+        namereneRychlosti[0] = ((pocetZprav[0] / (dobaMereni))* 8.0)/1024.0;
     }
-    memset(buf, 0, sizeof(buf));
-    bzero(buf, BUFSIZE);
-    strcpy(buf, "konec_spojeni");
-    /* odeslani zpravy na server */
-    serverlen = sizeof(server_address);
-    bytestx = sendto(client_socket, buf, strlen(buf), 0, (struct sockaddr *) &server_address, serverlen);
-    if (bytestx < 0)
-        perror("ERROR: sendto");
+    //****************************************************************************************************
+    if(dobaMereni > 1) {
+        alarmed = 0;
+        signal(SIGALRM, &callAlarm);
+        //alarm(dobaMereni);
+        alarm(1);
+        //printf("INFO: probiha mereni ...\n");
+        while (!alarmed) {
+            memset(buf, 0, sizeof(buf));
+            bzero(buf, BUFSIZE);
+            strcpy(buf, "x");
+            for (int i = 0; i < velikostSondy; i++)
+                strcat(buf, "x");
 
-    /* prijeti odpovedi a jeji vypsani */
-    memset(buf, 0, sizeof(buf));
-    bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
-    if (bytesrx < 0)
-        perror("ERROR: recvfrom");
-    printf("Echo from server: '%s' prijatych \n", buf);
+            /* odeslani zpravy na server */
+            serverlen = sizeof(server_address);
+            bytestx = sendto(client_socket, buf, strlen(buf), 0, (struct sockaddr *) &server_address, serverlen);
+            if (bytestx < 0)
+                perror("ERROR: sendto");
+
+            /* prijeti odpovedi a jeji vypsani */
+            bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
+            if (bytesrx < 0)
+                perror("ERROR: recvfrom");
+            //printf("Echo from server: '%s'\n", buf);
+            meterPocetOdeslanych++;
+        }
+
+        memset(buf, 0, sizeof(buf));
+        bzero(buf, BUFSIZE);
+        strcpy(buf, "konec_spojeni");
+        /* odeslani zpravy na server */
+        serverlen = sizeof(server_address);
+        bytestx = sendto(client_socket, buf, strlen(buf), 0, (struct sockaddr *) &server_address, serverlen);
+        if (bytestx < 0)
+            perror("ERROR: sendto");
+
+        /* prijeti odpovedi a jeji vypsani */
+        memset(buf, 0, sizeof(buf));
+        bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
+        if (bytesrx < 0)
+            perror("ERROR: recvfrom");
+        //printf("Echo from server: '%s' prijatych \n", buf);
+        //printf("tady chci z buff %s udelat integer\n", buf);
+        pocetZprav[1] = strtol(buf, NULL, 0);
+        namereneRychlosti[1] = ((pocetZprav[1] / (dobaMereni))* 8.0)/1024.0;
+    }
+    //****************************************************************************************************
+    if(dobaMereni > 2) {
+        alarmed = 0;
+        signal(SIGALRM, &callAlarm);
+        //alarm(dobaMereni);
+        alarm(1);
+        //printf("INFO: probiha mereni ...\n");
+        while (!alarmed) {
+            memset(buf, 0, sizeof(buf));
+            bzero(buf, BUFSIZE);
+            strcpy(buf, "x");
+            for (int i = 0; i < velikostSondy; i++)
+                strcat(buf, "x");
+
+            /* odeslani zpravy na server */
+            serverlen = sizeof(server_address);
+            bytestx = sendto(client_socket, buf, strlen(buf), 0, (struct sockaddr *) &server_address, serverlen);
+            if (bytestx < 0)
+                perror("ERROR: sendto");
+
+            /* prijeti odpovedi a jeji vypsani */
+            bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
+            if (bytesrx < 0)
+                perror("ERROR: recvfrom");
+            //printf("Echo from server: '%s'\n", buf);
+            meterPocetOdeslanych++;
+        }
+
+        memset(buf, 0, sizeof(buf));
+        bzero(buf, BUFSIZE);
+        strcpy(buf, "konec_spojeni");
+        /* odeslani zpravy na server */
+        serverlen = sizeof(server_address);
+        bytestx = sendto(client_socket, buf, strlen(buf), 0, (struct sockaddr *) &server_address, serverlen);
+        if (bytestx < 0)
+            perror("ERROR: sendto");
+
+        /* prijeti odpovedi a jeji vypsani */
+        memset(buf, 0, sizeof(buf));
+        bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
+        if (bytesrx < 0)
+            perror("ERROR: recvfrom");
+        //printf("Echo from server: '%s' prijatych \n", buf);
+        //printf("tady chci z buff %s udelat integer\n", buf);
+        pocetZprav[2] = strtol(buf, NULL, 0);
+        namereneRychlosti[2] = ((pocetZprav[2] / (dobaMereni))* 8.0)/1024.0;
+    }
+    //****************************************************************************************************
+    if(dobaMereni > 3) {
+        alarmed = 0;
+        signal(SIGALRM, &callAlarm);
+        //alarm(dobaMereni);
+        alarm(1);
+        //printf("INFO: probiha mereni ...\n");
+        while (!alarmed) {
+            memset(buf, 0, sizeof(buf));
+            bzero(buf, BUFSIZE);
+            strcpy(buf, "x");
+            for (int i = 0; i < velikostSondy; i++)
+                strcat(buf, "x");
+
+            /* odeslani zpravy na server */
+            serverlen = sizeof(server_address);
+            bytestx = sendto(client_socket, buf, strlen(buf), 0, (struct sockaddr *) &server_address, serverlen);
+            if (bytestx < 0)
+                perror("ERROR: sendto");
+
+            /* prijeti odpovedi a jeji vypsani */
+            bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
+            if (bytesrx < 0)
+                perror("ERROR: recvfrom");
+            //printf("Echo from server: '%s'\n", buf);
+            meterPocetOdeslanych++;
+        }
+
+        memset(buf, 0, sizeof(buf));
+        bzero(buf, BUFSIZE);
+        strcpy(buf, "konec_spojeni");
+        /* odeslani zpravy na server */
+        serverlen = sizeof(server_address);
+        bytestx = sendto(client_socket, buf, strlen(buf), 0, (struct sockaddr *) &server_address, serverlen);
+        if (bytestx < 0)
+            perror("ERROR: sendto");
+
+        /* prijeti odpovedi a jeji vypsani */
+        memset(buf, 0, sizeof(buf));
+        bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
+        if (bytesrx < 0)
+            perror("ERROR: recvfrom");
+        //printf("Echo from server: '%s' prijatych \n", buf);
+        //printf("tady chci z buff %s udelat integer\n", buf);
+        pocetZprav[3] = strtol(buf, NULL, 0);
+        namereneRychlosti[3] = ((pocetZprav[3] / (dobaMereni))* 8.0)/1024.0;
+    }
+    //****************************************************************************************************
+    if(dobaMereni > 4) {
+        alarmed = 0;
+        signal(SIGALRM, &callAlarm);
+        //alarm(dobaMereni);
+        alarm(dobaMereni-4);
+        //printf("INFO: probiha mereni ...\n");
+        while (!alarmed) {
+            memset(buf, 0, sizeof(buf));
+            bzero(buf, BUFSIZE);
+            strcpy(buf, "x");
+            for (int i = 0; i < velikostSondy; i++)
+                strcat(buf, "x");
+
+            /* odeslani zpravy na server */
+            serverlen = sizeof(server_address);
+            bytestx = sendto(client_socket, buf, strlen(buf), 0, (struct sockaddr *) &server_address, serverlen);
+            if (bytestx < 0)
+                perror("ERROR: sendto");
+
+            /* prijeti odpovedi a jeji vypsani */
+            bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
+            if (bytesrx < 0)
+                perror("ERROR: recvfrom");
+            //printf("Echo from server: '%s'\n", buf);
+            meterPocetOdeslanych++;
+        }
+
+        memset(buf, 0, sizeof(buf));
+        bzero(buf, BUFSIZE);
+        strcpy(buf, "konec_spojeni");
+        /* odeslani zpravy na server */
+        serverlen = sizeof(server_address);
+        bytestx = sendto(client_socket, buf, strlen(buf), 0, (struct sockaddr *) &server_address, serverlen);
+        if (bytestx < 0)
+            perror("ERROR: sendto");
+
+        /* prijeti odpovedi a jeji vypsani */
+        memset(buf, 0, sizeof(buf));
+        bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
+        if (bytesrx < 0)
+            perror("ERROR: recvfrom");
+        //printf("Echo from server: '%s' prijatych \n", buf);
+        //printf("tady chci z buff %s udelat integer\n", buf);
+        pocetZprav[4] = strtol(buf, NULL, 0);
+        namereneRychlosti[4] = ((pocetZprav[4] / (dobaMereni-4))* 8.0)/1024.0;
+    }
+    //****************************************************************************************************
 }
 
 /*
@@ -310,14 +504,14 @@ int main(int argc, char **argv) {
 
     // Program je spuštěn jako reflect
     if(isReflect == true) {
-        printf("Program je spusten jako reflektor\tport: %d\n--------------------------------------------------\n", port);
+        //printf("Program je spusten jako reflektor\tport: %d\n--------------------------------------------------\n", port);
         reflecting();
     }
 
     // Program je spuštěn jako meter
     if(isMeter == true) {
-        printf("Program je spusten jako meter\thost: %s | port: %d | sonda: %d | time: %d\n", host, port, velikostSondy, dobaMereni);
-        printf("-----------------------------------------------------------------------------------\n");
+        //printf("Program je spusten jako meter\thost: %s | port: %d | sonda: %d | time: %d\n", host, port, velikostSondy, dobaMereni);
+        //printf("-------------------------------------------------------------------------------------\n");
         measurementing();
     }
 
@@ -328,8 +522,14 @@ int main(int argc, char **argv) {
     printf("Maximalni prenosova rychlost :\t%.4lf Mbit/s\n", getMaximalniRychlost());
     printf("Minimalni prenosova rychlost :\t%.4lf Mbit/s\n", getMinimalniRychlost());
     printf("Standardni odchylka          :\t%.4lf Mbit/s\n", getStandardniOdchylka());
-    printf("Prumerny RTT paketu          :\t%.4lf Mbit/s\n", getPrumernyRTT());
+    printf("Prumerny RTT paketu          :\t%d miliseconds\n", getPrumernyRTT());
 
+    for(int i = 0; i < 5; i++){
+        if(pocetZprav[i] != 0) {
+            printf("%d. beh: %d", i + 1, pocetZprav[i]);
+            printf("\t%d. beh: %lf Mbit/s\n", i + 1, namereneRychlosti[i]);
+        }
+    }
 
     exit(EXIT_SUCCESS);
 }
@@ -339,9 +539,13 @@ int main(int argc, char **argv) {
  */
 double getPrumernaRychlost(){
     double result = 0.0;
-    for(int i = 0; i < 7; i++)
+    int i;
+    for(i = 0; i < 5; i++) {
+        if(namereneRychlosti[i] == 0)
+            break;
         result += namereneRychlosti[i];
-    result = result / 7;
+    }
+    result = result / (i+1);
     return result;
 }
 
@@ -350,9 +554,12 @@ double getPrumernaRychlost(){
  */
 double getMaximalniRychlost(){
     double max = 0.0;
-    for(int i = 0; i < 7; i++)
-        if(namereneRychlosti[i] > max)
+    for(int i = 0; i < 5; i++) {
+        if (namereneRychlosti[i] == 0)
+            break;
+        if (namereneRychlosti[i] > max)
             max = namereneRychlosti[i];
+    }
     return max;
 }
 
@@ -361,9 +568,12 @@ double getMaximalniRychlost(){
  */
 double getMinimalniRychlost(){
     double min = DBL_MAX;
-    for(int i = 0; i < 7; i++)
-        if(namereneRychlosti[i] < min)
+    for(int i = 0; i < 5; i++) {
+        if (namereneRychlosti[i] == 0)
+            break;
+        if (namereneRychlosti[i] < min)
             min = namereneRychlosti[i];
+    }
     return min;
 }
 
@@ -375,12 +585,18 @@ double getStandardniOdchylka(){
     // result = [SUM from i to N(xi - xprumer)^2]/N
     double result = 0.0;
     double sum = 0.0;
-    for(int i = 0; i < 7; i++)
+    int i;
+    for(i = 0; i < 5; i++) {
+        if(namereneRychlosti[i] == 0)
+            break;
         sum += namereneRychlosti[i];
-    double prumer = sum / 7;
-    for(int i = 0; i < 7; i++)
+    }
+    double prumer = sum / (i+1);
+    for(i = 0; i < 5; i++)
+        if(namereneRychlosti[i] == 0)
+            break;
         result += pow(namereneRychlosti[i] - prumer, 2);
-    result = sqrt(result/7);
+    result = sqrt(result/(i+1));
 
     return result;
 }
@@ -388,7 +604,7 @@ double getStandardniOdchylka(){
 /*
  * Funkce vrátí průměrnou naměřenou rychlost
  */
-double getPrumernyRTT(){
+int getPrumernyRTT(){
 
-    return 0.0;
+    return 0;
 }
