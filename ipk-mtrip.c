@@ -16,6 +16,8 @@
 #include <assert.h>
 #include <bits/signum.h>
 #include <signal.h>
+#include <float.h>
+#include <math.h>
 
 #define BUFSIZE 1024
 
@@ -42,6 +44,9 @@ int alarmed = 0;
 int reflectPocetPrijatych = 0;
 int meterPocetOdeslanych = 0;
 
+// TODO přidávat hodnoty do pole v meteru, toto je provizorní
+//double namereneRychlosti[] = {55.142, 658.41, 12.8, 9998.512, 565.564, 6874.657, 4654.5464, 5464.687, 14.35, 688.989};
+double namereneRychlosti[] = {99.1, 99.0, 99.5, 99.178, 101.65, 94.2541, 100.0};
 double prumernaPrenosRychlost  = 0.0;
 double maximalniPrenosRychlost = 0.0;
 double minimalniPrenosRychlost = 0.0;
@@ -56,6 +61,11 @@ bool checkArguments(int, char **);
 void reflecting();
 void measurementing();
 void sigh(int);
+double getPrumernaRychlost();
+double getMaximalniRychlost();
+double getMinimalniRychlost();
+double getStandardniOdchylka();
+double getPrumernyRTT();
 
 /*
  * Funkce pro vypsání nápovědy
@@ -311,14 +321,74 @@ int main(int argc, char **argv) {
         measurementing();
     }
 
+
     // Výpis výsledků měření na stdout
     printf("\nVysledky mereni ipk-mtrip\n-----------------------------\n");
-    printf("Prumerna  prenosova rychlost:\t%lf Mbit/s\n", prumernaPrenosRychlost);
-    printf("Maximalni prenosova rychlost:\t%lf Mbit/s\n", maximalniPrenosRychlost);
-    printf("Minimalni prenosova rychlost:\t%lf Mbit/s\n", minimalniPrenosRychlost);
-    printf("Standardni odchylka         :\t%lf Mbit/s\n", standardniOdchylka);
-    printf("Prumerny RTT paketu         :\t%lf Mbit/s\n", prumernyRTTpaketu);
+    printf("Prumerna  prenosova rychlost :\t%.4lf Mbit/s\n", getPrumernaRychlost());
+    printf("Maximalni prenosova rychlost :\t%.4lf Mbit/s\n", getMaximalniRychlost());
+    printf("Minimalni prenosova rychlost :\t%.4lf Mbit/s\n", getMinimalniRychlost());
+    printf("Standardni odchylka          :\t%.4lf Mbit/s\n", getStandardniOdchylka());
+    printf("Prumerny RTT paketu          :\t%.4lf Mbit/s\n", getPrumernyRTT());
 
 
     exit(EXIT_SUCCESS);
+}
+
+/*
+ * Funkce vrátí průměrnou naměřenou rychlost
+ */
+double getPrumernaRychlost(){
+    double result = 0.0;
+    for(int i = 0; i < 7; i++)
+        result += namereneRychlosti[i];
+    result = result / 7;
+    return result;
+}
+
+/*
+ * Funkce vrátí maximální naměřenou rychlost
+ */
+double getMaximalniRychlost(){
+    double max = 0.0;
+    for(int i = 0; i < 7; i++)
+        if(namereneRychlosti[i] > max)
+            max = namereneRychlosti[i];
+    return max;
+}
+
+/*
+ * Funkce vrátí minimální naměřenou rychlost
+ */
+double getMinimalniRychlost(){
+    double min = DBL_MAX;
+    for(int i = 0; i < 7; i++)
+        if(namereneRychlosti[i] < min)
+            min = namereneRychlosti[i];
+    return min;
+}
+
+/*
+ * Funkce vrátí standardní ochylku
+ */
+double getStandardniOdchylka(){
+
+    // result = [SUM from i to N(xi - xprumer)^2]/N
+    double result = 0.0;
+    double sum = 0.0;
+    for(int i = 0; i < 7; i++)
+        sum += namereneRychlosti[i];
+    double prumer = sum / 7;
+    for(int i = 0; i < 7; i++)
+        result += pow(namereneRychlosti[i] - prumer, 2);
+    result = sqrt(result/7);
+
+    return result;
+}
+
+/*
+ * Funkce vrátí průměrnou naměřenou rychlost
+ */
+double getPrumernyRTT(){
+
+    return 0.0;
 }
