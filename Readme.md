@@ -48,7 +48,3 @@ $ ./ipk-mtrip meter -h HOST -p PORT -s SONDA -t TIME
 + -p PORT : číslo portu vzdáleného hosta, na kterém beží reflektor
 + -s SONDA: velikost jedné zprávy odesílané na reflektor
 + -t TIME : čas, po který se má provádět měření
-
-## Funkcionalita
-
-# TODO

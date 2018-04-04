@@ -17,6 +17,7 @@
 #include <signal.h>
 #include <float.h>
 #include <math.h>
+#include <sys/time.h>
 
 #define BUFSIZE 1024
 
@@ -44,8 +45,14 @@ int alarmed = 0;
 int reflectPocetPrijatych = 0;
 int meterPocetOdeslanych = 0;
 
-double namereneRychlosti[5];
 int pocetZprav[5];
+double namereneRychlosti[5];
+double RTTarray[999999];
+int RTTindex = 0;
+
+struct timeval start, stop;
+double miliseconds;
+
 double prumernaPrenosRychlost  = 0.0;
 double maximalniPrenosRychlost = 0.0;
 double minimalniPrenosRychlost = 0.0;
@@ -64,7 +71,7 @@ double getPrumernaRychlost();
 double getMaximalniRychlost();
 double getMinimalniRychlost();
 double getStandardniOdchylka();
-int getPrumernyRTT();
+double getPrumernyRTT();
 
 /*
  * Funkce pro vypsání nápovědy
@@ -253,6 +260,11 @@ void measurementing(){
         exit(EXIT_FAILURE);
     }
 
+    /*struct timeval tv;
+    tv.tv_sec = 5;
+    tv.tv_usec = 5;
+    setsockopt(client_socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);*/
+
     // alarm1 se spustí po době měření určené parametrem -t a ukončí cyklus while
     //****************************************************************************************************
     if(dobaMereni > 0) {
@@ -269,15 +281,24 @@ void measurementing(){
 
             /* odeslani zpravy na server */
             serverlen = sizeof(server_address);
+
+            miliseconds = 0.0;
+            gettimeofday(&start, NULL); // začátek měření RTT
             bytestx = sendto(client_socket, buf, strlen(buf), 0, (struct sockaddr *) &server_address, serverlen);
             if (bytestx < 0)
                 perror("ERROR: sendto");
 
             /* prijeti odpovedi a jeji vypsani */
+
             bytesrx = recvfrom(client_socket, buf, BUFSIZE, 0, (struct sockaddr *) &server_address, &serverlen);
-            if (bytesrx < 0)
+            if (bytesrx < 0) {
                 perror("ERROR: recvfrom");
+                exit(EXIT_FAILURE);
+            }
             //printf("Echo from server: '%s'\n", buf);
+            gettimeofday(&stop, NULL); // konec měření
+            miliseconds = (double) (stop.tv_usec - start.tv_usec) / 1000 + (double) (stop.tv_sec - start.tv_sec);
+            RTTarray[RTTindex] = miliseconds; RTTindex++;
             meterPocetOdeslanych++;
         }
 
@@ -298,7 +319,7 @@ void measurementing(){
         //printf("Echo from server: '%s' prijatych \n", buf);
         //printf("tady chci z buff %s udelat integer\n", buf);
         pocetZprav[0] = strtol(buf, NULL, 0);
-        namereneRychlosti[0] = ((pocetZprav[0] / (dobaMereni))* 8.0)/1024.0;
+        namereneRychlosti[0] = ((pocetZprav[0]*(double)velikostSondy / 1.0 )* 8.0)/1000 ;
     }
     //****************************************************************************************************
     if(dobaMereni > 1) {
@@ -345,7 +366,7 @@ void measurementing(){
         //printf("Echo from server: '%s' prijatych \n", buf);
         //printf("tady chci z buff %s udelat integer\n", buf);
         pocetZprav[1] = strtol(buf, NULL, 0);
-        namereneRychlosti[1] = ((pocetZprav[1] / (dobaMereni))* 8.0)/1024.0;
+        namereneRychlosti[1] = ((pocetZprav[1]*(double)velikostSondy / 1.0 )* 8.0)/1000 ;
     }
     //****************************************************************************************************
     if(dobaMereni > 2) {
@@ -392,7 +413,7 @@ void measurementing(){
         //printf("Echo from server: '%s' prijatych \n", buf);
         //printf("tady chci z buff %s udelat integer\n", buf);
         pocetZprav[2] = strtol(buf, NULL, 0);
-        namereneRychlosti[2] = ((pocetZprav[2] / (dobaMereni))* 8.0)/1024.0;
+        namereneRychlosti[2] = ((pocetZprav[2]*(double)velikostSondy / 1.0 )* 8.0)/1000 ;
     }
     //****************************************************************************************************
     if(dobaMereni > 3) {
@@ -439,7 +460,7 @@ void measurementing(){
         //printf("Echo from server: '%s' prijatych \n", buf);
         //printf("tady chci z buff %s udelat integer\n", buf);
         pocetZprav[3] = strtol(buf, NULL, 0);
-        namereneRychlosti[3] = ((pocetZprav[3] / (dobaMereni))* 8.0)/1024.0;
+        namereneRychlosti[3] = ((pocetZprav[3]*(double)velikostSondy / 1.0 )* 8.0)/1000 ;
     }
     //****************************************************************************************************
     if(dobaMereni > 4) {
@@ -486,7 +507,7 @@ void measurementing(){
         //printf("Echo from server: '%s' prijatych \n", buf);
         //printf("tady chci z buff %s udelat integer\n", buf);
         pocetZprav[4] = strtol(buf, NULL, 0);
-        namereneRychlosti[4] = ((pocetZprav[4] / (dobaMereni-4))* 8.0)/1024.0;
+        namereneRychlosti[4] = ((pocetZprav[4]*(double)velikostSondy / (dobaMereni-4) )* 8.0)/1000 ;
     }
     //****************************************************************************************************
 }
@@ -517,19 +538,27 @@ int main(int argc, char **argv) {
 
 
     // Výpis výsledků měření na stdout
+    printf("INFO: mereni dokonceno\n");
     printf("\nVysledky mereni ipk-mtrip\n-----------------------------\n");
-    printf("Prumerna  prenosova rychlost :\t%.4lf Mbit/s\n", getPrumernaRychlost());
-    printf("Maximalni prenosova rychlost :\t%.4lf Mbit/s\n", getMaximalniRychlost());
-    printf("Minimalni prenosova rychlost :\t%.4lf Mbit/s\n", getMinimalniRychlost());
-    printf("Standardni odchylka          :\t%.4lf Mbit/s\n", getStandardniOdchylka());
-    printf("Prumerny RTT paketu          :\t%d miliseconds\n", getPrumernyRTT());
+    printf("Prumerna  prenosova rychlost :\t%.3lf Mbit/s\n", getPrumernaRychlost());
+    printf("Maximalni prenosova rychlost :\t%.3lf Mbit/s\n", getMaximalniRychlost());
+    printf("Minimalni prenosova rychlost :\t%.3lf Mbit/s\n", getMinimalniRychlost());
+    printf("Standardni odchylka          :\t%.3lf Mbit/s\n", getStandardniOdchylka());
+    printf("Prumerny RTT paketu          :\t%.3lf miliseconds\n", getPrumernyRTT());
 
-    for(int i = 0; i < 5; i++){
+    /*for(int i = 0; i < 5; i++){
         if(pocetZprav[i] != 0) {
             printf("%d. beh: %d", i + 1, pocetZprav[i]);
             printf("\t%d. beh: %lf Mbit/s\n", i + 1, namereneRychlosti[i]);
         }
     }
+
+    for (int j = 0; j < 20; j++) {
+        if(RTTarray[j] != 0){
+            printf("%lf ms", RTTarray[j]);
+        }
+    }
+    printf("\n");*/
 
     exit(EXIT_SUCCESS);
 }
@@ -545,7 +574,7 @@ double getPrumernaRychlost(){
             break;
         result += namereneRychlosti[i];
     }
-    result = result / (i+1);
+    result = result / (double)(i);
     return result;
 }
 
@@ -587,16 +616,15 @@ double getStandardniOdchylka(){
     double sum = 0.0;
     int i;
     for(i = 0; i < 5; i++) {
-        if(namereneRychlosti[i] == 0)
-            break;
         sum += namereneRychlosti[i];
     }
-    double prumer = sum / (i+1);
-    for(i = 0; i < 5; i++)
-        if(namereneRychlosti[i] == 0)
+    double prumer = sum / (double)(i);
+    for(i = 0; i < 5; i++) {
+        if (namereneRychlosti[i] == 0)
             break;
         result += pow(namereneRychlosti[i] - prumer, 2);
-    result = sqrt(result/(i+1));
+    }
+    result = sqrt(result/(double)(i));
 
     return result;
 }
@@ -604,7 +632,14 @@ double getStandardniOdchylka(){
 /*
  * Funkce vrátí průměrnou naměřenou rychlost
  */
-int getPrumernyRTT(){
-
-    return 0;
+double getPrumernyRTT(){
+    double result = 0.0;
+    int i;
+    for(i = 0; i < 99999999; i++) {
+        if(namereneRychlosti[i] == 0)
+            break;
+        result += RTTarray[i];
+    }
+    result = result / (i+1);
+    return result;
 }
