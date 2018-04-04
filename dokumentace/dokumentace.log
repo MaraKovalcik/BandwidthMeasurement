@@ -1,0 +1,429 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=pdflatex 2017.9.3)  4 APR 2018 18:26
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**dokumentace.tex
+(./dokumentace.tex
+LaTeX2e <2016/02/01>
+Babel <3.9q> and hyphenation patterns for 81 language(s) loaded.
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size11.clo
+File: size11.clo 2014/09/29 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2010/09/12 v5.6 Page Geometry
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is detected.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifvtex.sty
+Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+)
+(/usr/share/texlive/texmf-dist/tex/generic/ifxetex/ifxetex.sty
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+\Gm@cnth=\count87
+\Gm@cntv=\count88
+\c@Gm@tempcnt=\count89
+\Gm@bindingoffset=\dimen103
+\Gm@wd@mp=\dimen104
+\Gm@odd@mp=\dimen105
+\Gm@even@mp=\dimen106
+\Gm@layoutwidth=\dimen107
+\Gm@layoutheight=\dimen108
+\Gm@layouthoffset=\dimen109
+\Gm@layoutvoffset=\dimen110
+\Gm@dimlist=\toks15
+
+
+Package geometry Warning: Over-specification in `h'-direction.
+    `width' (483.69684pt) is ignored.
+
+) (/usr/share/texlive/texmf-dist/tex/generic/babel/babel.sty
+Package: babel 2016/02/24 3.9q The Babel package
+
+(/usr/share/texlive/texmf-dist/tex/generic/babel-czech/czech.ldf
+Language: czech 2008/07/06 v3.1a Czech support from the babel system
+
+(/usr/share/texlive/texmf-dist/tex/generic/babel/babel.def
+File: babel.def 2016/02/24 3.9q Babel common definitions
+\babel@savecnt=\count90
+\U@D=\dimen111
+)
+Package babel Info: Making " an active character on input line 172.
+\cs@wordlen=\count91
+Package babel Info: Making - an active character on input line 226.
+))
+(/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2015/03/17 v1.2c Input encoding file
+\inpenc@prehook=\toks16
+\inpenc@posthook=\toks17
+
+(/usr/share/texlive/texmf-dist/tex/latex/ucs/utf8x.def
+File: utf8x.def 2004/10/17 UCS: Input encoding UTF-8
+))
+(/usr/share/texlive/texmf-dist/tex/latex/ucs/ucs.sty
+Package: ucs 2013/05/11 v2.2 UCS: Unicode input support
+
+(/usr/share/texlive/texmf-dist/tex/latex/ucs/data/uni-global.def
+File: uni-global.def 2013/05/13 UCS: Unicode global data
+)
+\uc@secondtry=\count92
+\uc@combtoks=\toks18
+\uc@combtoksb=\toks19
+\uc@temptokena=\toks20
+)
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrextend.sty
+Package: scrextend 2015/10/03 v3.19a KOMA-Script package (extend other classes 
+with features of KOMA-Script classes)
+
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrkbase.sty
+Package: scrkbase 2015/10/03 v3.19a KOMA-Script package (KOMA-Script-dependent 
+basics and keyval usage)
+
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrbase.sty
+Package: scrbase 2015/10/03 v3.19a KOMA-Script package (KOMA-Script-independent
+ basics and keyval usage)
+
+(/usr/share/texlive/texmf-dist/tex/latex/koma-script/scrlfile.sty
+Package: scrlfile 2015/10/03 v3.19a KOMA-Script package (loading files)
+
+Package scrlfile, 2015/10/03 v3.19a KOMA-Script package (loading files)
+                  Copyright (C) Markus Kohm
+
+)))
+LaTeX Info: Redefining \textsubscript on input line 1277.
+) (/usr/share/texlive/texmf-dist/tex/latex/lipsum/lipsum.sty
+Package: lipsum 2014/07/27 v1.3 150 paragraphs of Lorem Ipsum dummy text
+\c@lips@count=\count93
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2014/10/28 v1.0g Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2016/01/03 v1.0q Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/graphics.cfg
+File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: pdftex.def on input line 95.
+
+(/usr/share/texlive/texmf-dist/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/infwarerr.sty
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ltxcmds.sty
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+)
+\Gread@gobject=\count94
+))
+\Gin@req@height=\dimen112
+\Gin@req@width=\dimen113
+)
+(/usr/share/texlive/texmf-dist/tex/latex/amscls/amsthm.sty
+Package: amsthm 2015/03/04 v2.20.2
+\thm@style=\toks21
+\thm@bodyfont=\toks22
+\thm@headfont=\toks23
+\thm@notefont=\toks24
+\thm@headpunct=\toks25
+\thm@preskip=\skip43
+\thm@postskip=\skip44
+\thm@headsep=\skip45
+\dth@everypar=\toks26
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/color.sty
+Package: color 2016/01/03 v1.1b Standard LaTeX Color (DPC)
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/color.cfg
+File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+)
+Package color Info: Driver file: pdftex.def on input line 143.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tocloft/tocloft.sty
+Package: tocloft 2013/05/02 v2.3f parameterised ToC, etc., typesetting
+Package tocloft Info: The document has section divisions on input line 44.
+\cftparskip=\skip46
+\cftbeforetoctitleskip=\skip47
+\cftaftertoctitleskip=\skip48
+\cftbeforepartskip=\skip49
+\cftpartnumwidth=\skip50
+\cftpartindent=\skip51
+\cftbeforesecskip=\skip52
+\cftsecindent=\skip53
+\cftsecnumwidth=\skip54
+\cftbeforesubsecskip=\skip55
+\cftsubsecindent=\skip56
+\cftsubsecnumwidth=\skip57
+\cftbeforesubsubsecskip=\skip58
+\cftsubsubsecindent=\skip59
+\cftsubsubsecnumwidth=\skip60
+\cftbeforeparaskip=\skip61
+\cftparaindent=\skip62
+\cftparanumwidth=\skip63
+\cftbeforesubparaskip=\skip64
+\cftsubparaindent=\skip65
+\cftsubparanumwidth=\skip66
+\cftbeforeloftitleskip=\skip67
+\cftafterloftitleskip=\skip68
+\cftbeforefigskip=\skip69
+\cftfigindent=\skip70
+\cftfignumwidth=\skip71
+\c@lofdepth=\count95
+\c@lotdepth=\count96
+\cftbeforelottitleskip=\skip72
+\cftafterlottitleskip=\skip73
+\cftbeforetabskip=\skip74
+\cfttabindent=\skip75
+\cfttabnumwidth=\skip76
+)
+(/usr/share/texlive/texmf-dist/tex/latex/changepage/changepage.sty
+Package: changepage 2009/10/20 v1.0c check page and change page layout
+\c@cp@cntr=\count97
+\cp@tempcnt=\count98
+)
+(./dokumentace.aux)
+\openout1 = `dokumentace.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 38.
+LaTeX Font Info:    ... okay on input line 38.
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: <default>
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(56.9055pt, 500.484pt, 56.9055pt)
+* v-part:(T,H,B)=(56.9055pt, 682.86613pt, 55.19835pt)
+* \paperwidth=614.295pt
+* \paperheight=794.96999pt
+* \textwidth=500.484pt
+* \textheight=682.86613pt
+* \oddsidemargin=-15.36449pt
+* \evensidemargin=-15.36449pt
+* \topmargin=-52.36449pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=11.0pt
+* \footskip=30.0pt
+* \marginparwidth=59.0pt
+* \marginparsep=10.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+(/usr/share/texlive/texmf-dist/tex/latex/ucs/ucsencs.def
+File: ucsencs.def 2011/01/21 Fixes to fontencodings LGR, T3
+)
+(/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count99
+\scratchdimen=\dimen114
+\scratchbox=\box26
+\nofMPsegments=\count100
+\nofMParguments=\count101
+\everyMPshowfont=\toks27
+\MPscratchCnt=\count102
+\MPscratchDim=\dimen115
+\MPnumerator=\count103
+\makeMPintoPDFobject=\count104
+\everyMPtoPDFconversion=\toks28
+) (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/pdftexcmds.sty
+Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifluatex.sty
+Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
+Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
+
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2010/08/19 v1.1 Manage graphics extensions (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/kvdefinekeys.sty
+Package: kvdefinekeys 2011/04/07 v1.3 Define keys (HO)
+))
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/kvoptions.sty
+Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/kvsetkeys.sty
+Package: kvsetkeys 2012/04/25 v1.16 Key value parser (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/etexcmds.sty
+Package: etexcmds 2011/02/16 v1.5 Avoid name clashes with e-TeX commands (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
+)))
+Package grfext Info: Graphics extension search list:
+(grfext)             [.png,.pdf,.jpg,.mps,.jpeg,.jbig2,.jb2,.PNG,.PDF,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 452.
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+<img/logo.png, id=1, 702.625pt x 168.63pt>
+File: img/logo.png Graphic file (type png)
+ <use img/logo.png>
+Package pdftex.def Info: img/logo.png used on input line 45.
+(pdftex.def)             Requested size: 210.78912pt x 50.58939pt.
+
+(/usr/share/texlive/texmf-dist/tex/latex/ucs/data/uni-0.def
+File: uni-0.def 2013/05/13 UCS: Unicode data U+0000..U+00FF
+)
+(/usr/share/texlive/texmf-dist/tex/latex/ucs/data/uni-1.def
+File: uni-1.def 2013/05/13 UCS: Unicode data U+0100..U+01FF
+)
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <17.28> on input line 58.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 58.
+ [1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./img/logo.png>] (./dokume
+ntace.toc
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 2.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 2.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 2.
+)
+\tf@toc=\write3
+\openout3 = `dokumentace.toc'.
+
+
+[1]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 87.
+ (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 87.
+ [2
+
+] [3]
+<img/makeMerlin.png, id=26, 628.3475pt x 58.2175pt>
+File: img/makeMerlin.png Graphic file (type png)
+ <use img/makeMerlin.png>
+Package pdftex.def Info: img/makeMerlin.png used on input line 140.
+(pdftex.def)             Requested size: 502.67868pt x 46.57405pt.
+
+Overfull \hbox (2.19469pt too wide) in paragraph at lines 140--140
+ [] 
+ []
+
+<img/mereniMerlin.png, id=27, 622.325pt x 159.59625pt>
+File: img/mereniMerlin.png Graphic file (type png)
+
+<use img/mereniMerlin.png>
+Package pdftex.def Info: img/mereniMerlin.png used on input line 145.
+(pdftex.def)             Requested size: 516.52962pt x 132.46483pt.
+
+Overfull \hbox (16.04562pt too wide) in paragraph at lines 145--145
+ [] 
+ []
+
+<img/mereniEva.png, id=28, 626.34pt x 159.59625pt>
+File: img/mereniEva.png Graphic file (type png)
+ <use img/mereniEva.png>
+Package pdftex.def Info: img/mereniEva.png used on input line 150.
+(pdftex.def)             Requested size: 519.86206pt x 132.46483pt.
+
+Overfull \hbox (19.37807pt too wide) in paragraph at lines 150--150
+ [] 
+ []
+
+[4 <./img/makeMerlin.png> <./img/mereniMerlin.png> <./img/mereniEva.png>]
+<img/mereniMerlinEva.png, id=35, 644.4075pt x 157.58875pt>
+File: img/mereniMerlinEva.png Graphic file (type png)
+
+<use img/mereniMerlinEva.png>
+Package pdftex.def Info: img/mereniMerlinEva.png used on input line 155.
+(pdftex.def)             Requested size: 489.74496pt x 119.76627pt.
+
+<img/mereniEvaMerlin.png, id=36, 582.175pt x 181.67876pt>
+File: img/mereniEvaMerlin.png Graphic file (type png)
+
+<use img/mereniEvaMerlin.png>
+Package pdftex.def Info: img/mereniEvaMerlin.png used on input line 159.
+(pdftex.def)             Requested size: 483.20514pt x 150.79332pt.
+ [5 <./img/mereniMerlinEva.png> <./img/mereniEvaMerlin.png>] (./dokumentace.aux
+) ) 
+Here is how much of TeX's memory you used:
+ 5229 strings out of 493029
+ 72842 string characters out of 6136235
+ 262331 words of memory out of 5000000
+ 8683 multiletter control sequences out of 15000+600000
+ 10935 words of font info for 38 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 47i,5n,37p,720b,572s stack positions out of 5000i,500n,10000p,200000b,80000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/sha
+re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmcsc10.pfb></usr/share/te
+xlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-d
+ist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/type
+1/public/amsfonts/cm/cmsy10.pfb>
+Output written on dokumentace.pdf (6 pages, 213629 bytes).
+PDF statistics:
+ 68 PDF objects out of 1000 (max. 8388607)
+ 39 compressed objects within 1 object stream
+ 0 named destinations out of 1000 (max. 500000)
+ 31 words of extra memory for PDF output out of 10000 (max. 10000000)
+
