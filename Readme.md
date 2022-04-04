@@ -1,5 +1,5 @@
-# VUT - FIT : IPK 2018
-### Marek Kovalčík - xkoval14@stud.fit.vutbr.cz
+
+### Marek Kovalčík - mara.kovalcik@gmail.com
 
 Tento soubor ukazuje jak projekt přeložit, jak uklidit binární soubory a jak jej spustit. Podrobnější popis projektu je v přiložené dokumentaci v PDF formátu.
 
